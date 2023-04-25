@@ -60,4 +60,53 @@ class BeerServiceImpl : BeerService {
     override fun getBeerById(id: UUID): Beer {
         return beerMap[id] ?: Beer()
     }
+
+    override fun saveNewBeer(beer: Beer): Beer {
+        val newBeer = beer.copy()
+        beerMap[newBeer.id] = newBeer
+        return newBeer
+    }
+
+    override fun updateById(beerId: UUID, beer: Beer) {
+        val beerFromMap: Beer? = beerMap[beerId]
+        beerFromMap.let {
+            beer.id = beerId
+            beerMap[beerId] = beer
+        }
+    }
+
+    override fun deleteById(beerId: UUID) {
+        beerMap.remove(beerId)
+    }
+
+    override fun patchBeerId(beerId: UUID, beer: Beer) {
+        beerMap[beerId].apply {
+            if (this != null) {
+                var beerChanged = false
+                if (beer.beerName.isNotBlank()) {
+                    beerName = beer.beerName
+                    beerChanged = true
+                }
+                if (beer.beerStyle != BeerStyle.NONE) {
+                    beerStyle = beer.beerStyle
+                    beerChanged = true
+                }
+                if (beer.price != BigDecimal(0)) {
+                    price = beer.price
+                    beerChanged = true
+                }
+                if (beer.quantityOnHand != 0) {
+                    quantityOnHand = beer.quantityOnHand
+                    beerChanged = true
+                }
+                if (beer.upc.isNotBlank()) {
+                    upc = beer.upc
+                    beerChanged = true
+                }
+                if (beerChanged) {
+                    updateDate = LocalDateTime.now()
+                }
+            }
+        }
+    }
 }

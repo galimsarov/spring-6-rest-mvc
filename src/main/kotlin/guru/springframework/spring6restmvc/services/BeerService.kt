@@ -7,4 +7,12 @@ interface BeerService {
     fun listBeers(): List<Beer>
 
     fun getBeerById(id: UUID): Beer
+
+    fun saveNewBeer(beer: Beer): Beer
+
+    fun updateById(beerId: UUID, beer: Beer)
+
+    fun deleteById(beerId: UUID)
+
+    fun patchBeerId(beerId: UUID, beer: Beer)
 }

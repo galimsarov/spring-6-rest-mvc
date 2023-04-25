@@ -7,11 +7,11 @@ import java.util.*
 data class Beer(
     var id: UUID = UUID.randomUUID(),
     val version: Int = 0,
-    val beerName: String = "",
-    val beerStyle: BeerStyle = BeerStyle.NONE,
-    val upc: String = "",
-    val quantityOnHand: Int = 0,
-    val price: BigDecimal = BigDecimal(0),
+    var beerName: String = "",
+    var beerStyle: BeerStyle = BeerStyle.NONE,
+    var upc: String = "",
+    var quantityOnHand: Int = 0,
+    var price: BigDecimal = BigDecimal(0),
     val createdDate: LocalDateTime = LocalDateTime.now(),
-    val updateDate: LocalDateTime = LocalDateTime.now(),
+    var updateDate: LocalDateTime = LocalDateTime.now(),
 )
