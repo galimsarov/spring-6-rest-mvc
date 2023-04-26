@@ -8,37 +8,39 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+const val BEER_PATH = "/api/v1/beer"
+const val BEER_PATH_ID = "$BEER_PATH/{beerId}"
+
 @RestController
-@RequestMapping("/api/v1/beer")
 @Suppress("unused")
 class BeerController(private val beerService: BeerService) {
-    @RequestMapping(method = [RequestMethod.GET])
+    @GetMapping(BEER_PATH)
     fun listBeers(): List<Beer> = beerService.listBeers()
 
-    @RequestMapping(value = ["/{beerId}"], method = [RequestMethod.GET])
+    @GetMapping(BEER_PATH_ID)
     fun getBeerById(@PathVariable("beerId") beerId: UUID): Beer = beerService.getBeerById(beerId)
 
-    @PostMapping
+    @PostMapping(BEER_PATH)
     fun handlePost(@RequestBody beer: Beer): ResponseEntity<Beer> {
         val savedBeer: Beer = beerService.saveNewBeer(beer)
         val headers = HttpHeaders()
-        headers.add("Location", "/api/v1/beer/${savedBeer.id}")
+        headers.add("Location", "$BEER_PATH/${savedBeer.id}")
         return ResponseEntity(headers, HttpStatus.CREATED)
     }
 
-    @PutMapping("/{beerId}")
+    @PutMapping(BEER_PATH_ID)
     fun updateById(@PathVariable("beerId") beerId: UUID, @RequestBody beer: Beer): ResponseEntity<Beer> {
         beerService.updateById(beerId, beer)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    @DeleteMapping("/{beerId}")
+    @DeleteMapping(BEER_PATH_ID)
     fun deleteById(@PathVariable("beerId") beerId: UUID): ResponseEntity<Beer> {
         beerService.deleteById(beerId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    @PatchMapping("/{beerId}")
+    @PatchMapping(BEER_PATH_ID)
     fun updateBeerPatchById(@PathVariable("beerId") beerId: UUID, @RequestBody beer: Beer): ResponseEntity<Beer> {
         beerService.patchBeerId(beerId, beer)
         return ResponseEntity(HttpStatus.NO_CONTENT)

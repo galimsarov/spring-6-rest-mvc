@@ -8,18 +8,20 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+const val CUSTOMER_PATH = "/api/v1/customer"
+const val CUSTOMER_PATH_ID = "$CUSTOMER_PATH/{customerId}"
+
 @RestController
-@RequestMapping("/api/v1/customer")
 @Suppress("unused")
 class CustomerController(private val customerService: CustomerService) {
-    @RequestMapping(method = [RequestMethod.GET])
+    @GetMapping(CUSTOMER_PATH)
     fun listCustomers(): List<Customer> = customerService.listCustomers()
 
-    @RequestMapping(value = ["/{customerId}"], method = [RequestMethod.GET])
+    @GetMapping(CUSTOMER_PATH_ID)
     fun getCustomerById(@PathVariable("customerId") customerId: UUID): Customer =
         customerService.getCustomerById(customerId)
 
-    @PostMapping
+    @PostMapping(CUSTOMER_PATH)
     fun handlePost(@RequestBody customer: Customer): ResponseEntity<Customer> {
         val savedCustomer: Customer = customerService.saveNewCustomer(customer)
         val headers = HttpHeaders()
@@ -27,7 +29,7 @@ class CustomerController(private val customerService: CustomerService) {
         return ResponseEntity(headers, HttpStatus.CREATED)
     }
 
-    @PutMapping("/{customerId}")
+    @PutMapping(CUSTOMER_PATH_ID)
     fun updateById(
         @PathVariable("customerId") customerId: UUID,
         @RequestBody customer: Customer
@@ -36,13 +38,13 @@ class CustomerController(private val customerService: CustomerService) {
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    @DeleteMapping("/{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_ID)
     fun deleteById(@PathVariable("customerId") customerId: UUID): ResponseEntity<Customer> {
         customerService.deleteById(customerId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    @PatchMapping("/{customerId}")
+    @PatchMapping(CUSTOMER_PATH_ID)
     fun updateCustomerPatchById(
         @PathVariable("customerId") customerId: UUID,
         @RequestBody customer: Customer
