@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.services
 
-import guru.springframework.spring6restmvc.model.Customer
+import guru.springframework.spring6restmvc.model.CustomerDTO
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
@@ -8,11 +8,11 @@ import java.util.*
 @Service
 @Suppress("unused")
 class CustomerServiceImpl : CustomerService {
-    private val customerMap: MutableMap<UUID, Customer> = mutableMapOf()
+    private val customerMap: MutableMap<UUID, CustomerDTO> = mutableMapOf()
 
     init {
         val firstId = UUID.randomUUID()
-        customerMap[firstId] = Customer(
+        customerMap[firstId] = CustomerDTO(
             id = firstId,
             version = 1,
             customerName = "Alex Ferguson",
@@ -20,7 +20,7 @@ class CustomerServiceImpl : CustomerService {
             lastModifiedDate = LocalDateTime.now()
         )
         val secondId = UUID.randomUUID()
-        customerMap[secondId] = Customer(
+        customerMap[secondId] = CustomerDTO(
             id = secondId,
             version = 1,
             customerName = "John Lennon",
@@ -29,20 +29,20 @@ class CustomerServiceImpl : CustomerService {
         )
     }
 
-    override fun listCustomers(): List<Customer> = customerMap.values.toList()
+    override fun listCustomers(): List<CustomerDTO> = customerMap.values.toList()
 
-    override fun getCustomerById(id: UUID): Customer {
-        return customerMap[id] ?: Customer()
+    override fun getCustomerById(id: UUID): CustomerDTO {
+        return customerMap[id] ?: CustomerDTO()
     }
 
-    override fun saveNewCustomer(customer: Customer): Customer {
+    override fun saveNewCustomer(customer: CustomerDTO): CustomerDTO {
         val newCustomer = customer.copy()
         customerMap[newCustomer.id] = newCustomer
         return newCustomer
     }
 
-    override fun updateById(customerId: UUID, customer: Customer) {
-        val customerFromMap: Customer? = customerMap[customerId]
+    override fun updateById(customerId: UUID, customer: CustomerDTO) {
+        val customerFromMap: CustomerDTO? = customerMap[customerId]
         customerFromMap.let {
             customer.id = customerId
             customerMap[customerId] = customer
@@ -53,7 +53,7 @@ class CustomerServiceImpl : CustomerService {
         customerMap.remove(customerId)
     }
 
-    override fun patchCustomerId(customerId: UUID, customer: Customer) {
+    override fun patchCustomerId(customerId: UUID, customer: CustomerDTO) {
         customerMap[customerId].apply {
             if (this != null) {
                 var customerChanged = false

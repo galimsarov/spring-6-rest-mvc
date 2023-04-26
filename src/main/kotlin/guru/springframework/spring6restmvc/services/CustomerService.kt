@@ -1,17 +1,17 @@
 package guru.springframework.spring6restmvc.services
 
-import guru.springframework.spring6restmvc.model.Customer
+import guru.springframework.spring6restmvc.model.CustomerDTO
 import java.util.*
 
 interface CustomerService {
-    fun listCustomers(): List<Customer>
+    fun listCustomers(): List<CustomerDTO>
 
-    fun getCustomerById(id: UUID): Customer
-    fun saveNewCustomer(customer: Customer): Customer
+    fun getCustomerById(id: UUID): CustomerDTO
+    fun saveNewCustomer(customer: CustomerDTO): CustomerDTO
 
-    fun updateById(customerId: UUID, customer: Customer)
+    fun updateById(customerId: UUID, customer: CustomerDTO)
 
     fun deleteById(customerId: UUID)
 
-    fun patchCustomerId(customerId: UUID, customer: Customer)
+    fun patchCustomerId(customerId: UUID, customer: CustomerDTO)
 }

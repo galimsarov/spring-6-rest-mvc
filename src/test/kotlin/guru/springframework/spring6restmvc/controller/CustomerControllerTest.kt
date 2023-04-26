@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import guru.springframework.spring6restmvc.model.Customer
+import guru.springframework.spring6restmvc.model.CustomerDTO
 import guru.springframework.spring6restmvc.services.CustomerService
 import guru.springframework.spring6restmvc.services.CustomerServiceImpl
 import org.hamcrest.core.Is
@@ -31,7 +31,7 @@ class CustomerControllerTest {
     private lateinit var customerService: CustomerService
 
     private lateinit var customerServiceImpl: CustomerServiceImpl
-    private lateinit var customer: Customer
+    private lateinit var customer: CustomerDTO
     private lateinit var customerPathTestId: String
 
     @BeforeEach

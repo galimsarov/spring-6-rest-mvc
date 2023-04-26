@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import guru.springframework.spring6restmvc.model.Beer
+import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.services.BeerService
 import guru.springframework.spring6restmvc.services.BeerServiceImpl
 import org.hamcrest.core.Is.`is`
@@ -30,7 +30,7 @@ class BeerControllerTest {
     private lateinit var beerService: BeerService
 
     private lateinit var beerServiceImpl: BeerServiceImpl
-    private lateinit var beer: Beer
+    private lateinit var beer: BeerDTO
     private lateinit var beerPathTestId: String
 
     @BeforeEach

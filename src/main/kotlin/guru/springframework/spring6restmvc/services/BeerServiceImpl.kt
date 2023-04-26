@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.services
 
-import guru.springframework.spring6restmvc.model.Beer
+import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.model.BeerStyle
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -10,11 +10,11 @@ import java.util.*
 @Service
 @Suppress("unused")
 class BeerServiceImpl : BeerService {
-    private val beerMap: MutableMap<UUID, Beer> = mutableMapOf()
+    private val beerMap: MutableMap<UUID, BeerDTO> = mutableMapOf()
 
     init {
         val firstId = UUID.randomUUID()
-        beerMap[firstId] = Beer(
+        beerMap[firstId] = BeerDTO(
             id = firstId,
             version = 1,
             beerName = "Galaxy Cat",
@@ -27,7 +27,7 @@ class BeerServiceImpl : BeerService {
         )
 
         val secondId = UUID.randomUUID()
-        beerMap[secondId] = Beer(
+        beerMap[secondId] = BeerDTO(
             id = secondId,
             version = 1,
             beerName = "Crank",
@@ -40,7 +40,7 @@ class BeerServiceImpl : BeerService {
         )
 
         val thirdId = UUID.randomUUID()
-        beerMap[thirdId] = Beer(
+        beerMap[thirdId] = BeerDTO(
             id = thirdId,
             version = 1,
             beerName = "Sunshine City",
@@ -53,22 +53,22 @@ class BeerServiceImpl : BeerService {
         )
     }
 
-    override fun listBeers(): List<Beer> {
+    override fun listBeers(): List<BeerDTO> {
         return beerMap.values.toList()
     }
 
-    override fun getBeerById(id: UUID): Beer {
-        return beerMap[id] ?: Beer()
+    override fun getBeerById(id: UUID): BeerDTO {
+        return beerMap[id] ?: BeerDTO()
     }
 
-    override fun saveNewBeer(beer: Beer): Beer {
+    override fun saveNewBeer(beer: BeerDTO): BeerDTO {
         val newBeer = beer.copy()
         beerMap[newBeer.id] = newBeer
         return newBeer
     }
 
-    override fun updateById(beerId: UUID, beer: Beer) {
-        val beerFromMap: Beer? = beerMap[beerId]
+    override fun updateById(beerId: UUID, beer: BeerDTO) {
+        val beerFromMap: BeerDTO? = beerMap[beerId]
         beerFromMap.let {
             beer.id = beerId
             beerMap[beerId] = beer
@@ -79,7 +79,7 @@ class BeerServiceImpl : BeerService {
         beerMap.remove(beerId)
     }
 
-    override fun patchBeerId(beerId: UUID, beer: Beer) {
+    override fun patchBeerId(beerId: UUID, beer: BeerDTO) {
         beerMap[beerId].apply {
             if (this != null) {
                 var beerChanged = false
