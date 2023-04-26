@@ -53,6 +53,18 @@ class BeerControllerTest {
     }
 
     @Test
+    fun getBeerByIdNotFound() {
+        val badId = UUID.randomUUID()
+        val pathWithBadId = "$BEER_PATH/$badId"
+
+        `when`(beerService.getBeerById(badId)).thenThrow(NotFoundException::class.java)
+
+        mockMvc
+            .perform(get(pathWithBadId))
+            .andExpect(status().isNotFound)
+    }
+
+    @Test
     fun listBeersTest() {
         val listBeers = beerServiceImpl.listBeers()
 
