@@ -17,6 +17,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import java.util.*
 
 @WebMvcTest(CustomerController::class)
 class CustomerControllerTest {
@@ -50,6 +51,18 @@ class CustomerControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", Is.`is`(customer.id.toString())))
             .andExpect(jsonPath("$.customerName", Is.`is`(customer.customerName)))
+    }
+
+    @Test
+    fun getCustomerByIdNotFound() {
+        val badId = UUID.randomUUID()
+        val pathWithBadId = "$CUSTOMER_PATH/$badId"
+
+        `when`(customerService.getCustomerById(badId)).thenThrow(NotFoundException::class.java)
+
+        mockMvc
+            .perform(get(pathWithBadId))
+            .andExpect(status().isNotFound)
     }
 
     @Test

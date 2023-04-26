@@ -45,9 +45,4 @@ class BeerController(private val beerService: BeerService) {
         beerService.patchBeerId(beerId, beer)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
-
-    @ExceptionHandler(NotFoundException::class)
-    fun handleNotFoundException(): ResponseEntity<Beer> {
-        return ResponseEntity.notFound().build()
-    }
 }
