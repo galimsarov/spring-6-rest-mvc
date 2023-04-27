@@ -18,8 +18,11 @@ class CustomerController(private val customerService: CustomerService) {
     fun listCustomers(): List<CustomerDTO> = customerService.listCustomers()
 
     @GetMapping(CUSTOMER_PATH_ID)
-    fun getCustomerById(@PathVariable("customerId") customerId: UUID): CustomerDTO =
+    fun getCustomerById(@PathVariable("customerId") customerId: UUID): CustomerDTO = try {
         customerService.getCustomerById(customerId)
+    } catch (_: NoSuchElementException) {
+        throw NotFoundException()
+    }
 
     @PostMapping(CUSTOMER_PATH)
     fun handlePost(@RequestBody customer: CustomerDTO): ResponseEntity<CustomerDTO> {
@@ -40,8 +43,8 @@ class CustomerController(private val customerService: CustomerService) {
 
     @DeleteMapping(CUSTOMER_PATH_ID)
     fun deleteById(@PathVariable("customerId") customerId: UUID): ResponseEntity<CustomerDTO> {
-        customerService.deleteById(customerId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        if (customerService.deleteById(customerId)) return ResponseEntity(HttpStatus.NO_CONTENT)
+        else throw NotFoundException()
     }
 
     @PatchMapping(CUSTOMER_PATH_ID)

@@ -41,16 +41,18 @@ class CustomerServiceImpl : CustomerService {
         return newCustomer
     }
 
-    override fun updateById(customerId: UUID, customer: CustomerDTO) {
+    override fun updateById(customerId: UUID, customer: CustomerDTO): CustomerDTO {
         val customerFromMap: CustomerDTO? = customerMap[customerId]
         customerFromMap.let {
             customer.id = customerId
             customerMap[customerId] = customer
+            return customer
         }
     }
 
-    override fun deleteById(customerId: UUID) {
+    override fun deleteById(customerId: UUID): Boolean {
         customerMap.remove(customerId)
+        return true
     }
 
     override fun patchCustomerId(customerId: UUID, customer: CustomerDTO) {

@@ -67,19 +67,21 @@ class BeerServiceImpl : BeerService {
         return newBeer
     }
 
-    override fun updateById(beerId: UUID, beer: BeerDTO) {
+    override fun updateById(beerId: UUID, beer: BeerDTO): BeerDTO {
         val beerFromMap: BeerDTO? = beerMap[beerId]
         beerFromMap.let {
             beer.id = beerId
             beerMap[beerId] = beer
+            return beer
         }
     }
 
-    override fun deleteById(beerId: UUID) {
+    override fun deleteById(beerId: UUID): Boolean {
         beerMap.remove(beerId)
+        return true
     }
 
-    override fun patchBeerId(beerId: UUID, beer: BeerDTO) {
+    override fun patchBeerId(beerId: UUID, beer: BeerDTO): BeerDTO {
         beerMap[beerId].apply {
             if (this != null) {
                 var beerChanged = false
@@ -91,11 +93,11 @@ class BeerServiceImpl : BeerService {
                     beerStyle = beer.beerStyle
                     beerChanged = true
                 }
-                if (beer.price != BigDecimal(0)) {
+                if (beer.price > BigDecimal(0)) {
                     price = beer.price
                     beerChanged = true
                 }
-                if (beer.quantityOnHand != 0) {
+                if (beer.quantityOnHand > 0) {
                     quantityOnHand = beer.quantityOnHand
                     beerChanged = true
                 }
@@ -106,6 +108,9 @@ class BeerServiceImpl : BeerService {
                 if (beerChanged) {
                     updateDate = LocalDateTime.now()
                 }
+                return this
+            } else {
+                return BeerDTO()
             }
         }
     }

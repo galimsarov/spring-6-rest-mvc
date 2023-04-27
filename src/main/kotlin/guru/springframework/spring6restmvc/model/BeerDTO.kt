@@ -6,7 +6,7 @@ import java.util.*
 
 data class BeerDTO(
     var id: UUID = UUID.randomUUID(),
-    val version: Int = 0,
+    var version: Int = 0,
     var beerName: String = "",
     var beerStyle: BeerStyle = BeerStyle.NONE,
     var upc: String = "",

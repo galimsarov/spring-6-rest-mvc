@@ -18,7 +18,12 @@ class BeerController(private val beerService: BeerService) {
     fun listBeers(): List<BeerDTO> = beerService.listBeers()
 
     @GetMapping(BEER_PATH_ID)
-    fun getBeerById(@PathVariable("beerId") beerId: UUID): BeerDTO = beerService.getBeerById(beerId)
+    fun getBeerById(@PathVariable("beerId") beerId: UUID): BeerDTO = try {
+        beerService.getBeerById(beerId)
+    } catch (_: NoSuchElementException) {
+        throw NotFoundException()
+    }
+
     @PostMapping(BEER_PATH)
     fun handlePost(@RequestBody beer: BeerDTO): ResponseEntity<BeerDTO> {
         val savedBeer: BeerDTO = beerService.saveNewBeer(beer)
@@ -35,8 +40,8 @@ class BeerController(private val beerService: BeerService) {
 
     @DeleteMapping(BEER_PATH_ID)
     fun deleteById(@PathVariable("beerId") beerId: UUID): ResponseEntity<BeerDTO> {
-        beerService.deleteById(beerId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        if (beerService.deleteById(beerId)) return ResponseEntity(HttpStatus.NO_CONTENT)
+        else throw NotFoundException()
     }
 
     @PatchMapping(BEER_PATH_ID)

@@ -10,9 +10,9 @@ interface CustomerService {
 
     fun saveNewCustomer(customer: CustomerDTO): CustomerDTO
 
-    fun updateById(customerId: UUID, customer: CustomerDTO)
+    fun updateById(customerId: UUID, customer: CustomerDTO): CustomerDTO
 
-    fun deleteById(customerId: UUID)
+    fun deleteById(customerId: UUID): Boolean
 
     fun patchCustomerId(customerId: UUID, customer: CustomerDTO)
 }

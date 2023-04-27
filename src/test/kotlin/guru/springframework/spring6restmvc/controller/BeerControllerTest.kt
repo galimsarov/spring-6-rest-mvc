@@ -108,6 +108,8 @@ class BeerControllerTest {
 
     @Test
     fun testDeleteBeer() {
+        `when`(beerService.deleteById(beer.id)).thenReturn(true)
+
         mockMvc
             .perform(delete(beerPathTestId).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent)

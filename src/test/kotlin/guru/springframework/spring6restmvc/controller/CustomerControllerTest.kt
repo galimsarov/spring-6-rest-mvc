@@ -109,6 +109,8 @@ class CustomerControllerTest {
 
     @Test
     fun testDeleteCustomer() {
+        `when`(customerService.deleteById(customer.id)).thenReturn(true)
+
         mockMvc
             .perform(delete(customerPathTestId).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent)

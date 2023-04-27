@@ -10,9 +10,9 @@ interface BeerService {
 
     fun saveNewBeer(beer: BeerDTO): BeerDTO
 
-    fun updateById(beerId: UUID, beer: BeerDTO)
+    fun updateById(beerId: UUID, beer: BeerDTO): BeerDTO
 
-    fun deleteById(beerId: UUID)
+    fun deleteById(beerId: UUID): Boolean
 
-    fun patchBeerId(beerId: UUID, beer: BeerDTO)
+    fun patchBeerId(beerId: UUID, beer: BeerDTO): BeerDTO
 }
