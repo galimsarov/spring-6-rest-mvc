@@ -19,7 +19,6 @@ class BeerController(private val beerService: BeerService) {
 
     @GetMapping(BEER_PATH_ID)
     fun getBeerById(@PathVariable("beerId") beerId: UUID): BeerDTO = beerService.getBeerById(beerId)
-
     @PostMapping(BEER_PATH)
     fun handlePost(@RequestBody beer: BeerDTO): ResponseEntity<BeerDTO> {
         val savedBeer: BeerDTO = beerService.saveNewBeer(beer)

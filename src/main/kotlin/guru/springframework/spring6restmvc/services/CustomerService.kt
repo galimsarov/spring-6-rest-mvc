@@ -7,6 +7,7 @@ interface CustomerService {
     fun listCustomers(): List<CustomerDTO>
 
     fun getCustomerById(id: UUID): CustomerDTO
+
     fun saveNewCustomer(customer: CustomerDTO): CustomerDTO
 
     fun updateById(customerId: UUID, customer: CustomerDTO)
