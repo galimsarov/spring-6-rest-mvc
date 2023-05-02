@@ -12,7 +12,9 @@ class BeerRepositoryTest {
 
     @Test
     fun testSavedBeer() {
-        val savedBeer = beerRepository.save(Beer(beerName = "My Beer"))
+        val savedBeer = beerRepository.save(Beer(beerName = "My Beer", upc = "234234"))
+
+        beerRepository.flush()
 
         assert(savedBeer.id.toString().isNotBlank())
     }
