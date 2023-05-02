@@ -55,7 +55,7 @@ class CustomerServiceImpl : CustomerService {
         return true
     }
 
-    override fun patchCustomerId(customerId: UUID, customer: CustomerDTO) {
+    override fun patchCustomerId(customerId: UUID, customer: CustomerDTO): CustomerDTO {
         customerMap[customerId].apply {
             if (this != null) {
                 var customerChanged = false
@@ -70,6 +70,9 @@ class CustomerServiceImpl : CustomerService {
                 if (customerChanged) {
                     lastModifiedDate = LocalDateTime.now()
                 }
+                return this
+            } else {
+                return CustomerDTO()
             }
         }
     }

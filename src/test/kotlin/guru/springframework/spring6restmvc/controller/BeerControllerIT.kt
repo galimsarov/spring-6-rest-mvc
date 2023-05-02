@@ -115,18 +115,20 @@ class BeerControllerIT {
     @Test
     @Transactional
     fun patchExistingBeer() {
+        val testBeerName = "UPDATED"
+
         val beer: Beer = beerRepository.findAll()[0]
-        val beerDTO = beer.toDto()
-        beerDTO.id = UUID.randomUUID()
-        beerDTO.version = 0
-        val beerName = "UPDATED"
-        beerDTO.beerName = beerName
+        val beerDTO = beer.toDto().apply {
+            id = UUID.randomUUID()
+            version = 0
+            beerName = testBeerName
+        }
 
         val responseEntity: ResponseEntity<BeerDTO> = beerController.updateBeerPatchById(beer.id, beerDTO)
         assert(responseEntity.statusCode == HttpStatusCode.valueOf(204))
 
         val updatedBeer: Beer = beerRepository.findById(beer.id).get()
-        assert(updatedBeer.beerName == beerName)
+        assert(updatedBeer.beerName == testBeerName)
     }
 
     @Test

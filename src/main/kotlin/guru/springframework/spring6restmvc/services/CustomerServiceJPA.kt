@@ -40,7 +40,16 @@ class CustomerServiceJPA(private val customerRepository: CustomerRepository) : C
         }
     }
 
-    override fun patchCustomerId(customerId: UUID, customer: CustomerDTO) {
-        TODO("Not yet implemented")
+    override fun patchCustomerId(customerId: UUID, customer: CustomerDTO): CustomerDTO {
+        var result = CustomerDTO()
+        customerRepository.findById(customerId).ifPresent { foundCustomer ->
+            foundCustomer.apply {
+                if (customer.customerName.isNotBlank()) customerName = customer.customerName
+            }
+            customerRepository.save(foundCustomer)
+            result = foundCustomer.toDto()
+        }
+        if (result.customerName.isNotBlank()) return result
+        else throw NotFoundException()
     }
 }

@@ -110,4 +110,30 @@ class CustomerControllerIT {
     fun testDeleteNotFound() {
         assertThrows<NotFoundException> { customerController.deleteById(UUID.randomUUID()) }
     }
+
+    @Rollback
+    @Test
+    @Transactional
+    fun patchExistingCustomer() {
+        val testCustomerName = "UPDATED"
+
+        val customer: Customer = customerRepository.findAll()[0]
+        val customerDTO = customer.toDto().apply {
+            id = UUID.randomUUID()
+            version = 0
+            customerName = testCustomerName
+        }
+
+        val responseEntity: ResponseEntity<CustomerDTO> =
+            customerController.updateCustomerPatchById(customer.id, customerDTO)
+        assert(responseEntity.statusCode == HttpStatusCode.valueOf(204))
+
+        val updatedCustomer: Customer = customerRepository.findById(customer.id).get()
+        assert(updatedCustomer.customerName == testCustomerName)
+    }
+
+    @Test
+    fun testPatchNotFound() {
+        assertThrows<NotFoundException> { customerController.updateCustomerPatchById(UUID.randomUUID(), CustomerDTO()) }
+    }
 }

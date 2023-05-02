@@ -14,5 +14,5 @@ interface CustomerService {
 
     fun deleteById(customerId: UUID): Boolean
 
-    fun patchCustomerId(customerId: UUID, customer: CustomerDTO)
+    fun patchCustomerId(customerId: UUID, customer: CustomerDTO): CustomerDTO
 }
