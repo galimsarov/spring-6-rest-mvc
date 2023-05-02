@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
@@ -93,6 +94,24 @@ class BeerControllerTest {
     }
 
     @Test
+    fun testCreateBeerEmptyBeerName() {
+        val emptyBeer = BeerDTO()
+
+        `when`(beerService.saveNewBeer(emptyBeer)).thenReturn(beerServiceImpl.listBeers()[1])
+
+        val mvcResult: MvcResult = mockMvc.perform(
+            post(BEER_PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(emptyBeer))
+        )
+            .andExpect(jsonPath("$.length()", `is`(2)))
+            .andExpect(status().isBadRequest).andReturn()
+
+        println(mvcResult.response.contentAsString)
+    }
+
+    @Test
     fun testUpdateBeer() {
         mockMvc
             .perform(
@@ -104,6 +123,24 @@ class BeerControllerTest {
             .andExpect(status().isNoContent)
 
         verify(beerService).updateById(beer.id, beer)
+    }
+
+    @Test
+    fun testUpdateBeerEmptyBeerName() {
+        val emptyBeer = BeerDTO()
+
+        `when`(beerService.updateById(emptyBeer.id, emptyBeer)).thenReturn(beerServiceImpl.listBeers()[1])
+
+        val mvcResult: MvcResult = mockMvc.perform(
+            put(beerPathTestId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(emptyBeer))
+        )
+            .andExpect(jsonPath("$.length()", `is`(2)))
+            .andExpect(status().isBadRequest).andReturn()
+
+        println(mvcResult.response.contentAsString)
     }
 
     @Test

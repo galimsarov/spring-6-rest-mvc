@@ -5,6 +5,7 @@ import guru.springframework.spring6restmvc.services.BeerService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -25,7 +26,7 @@ class BeerController(private val beerService: BeerService) {
     }
 
     @PostMapping(BEER_PATH)
-    fun handlePost(@RequestBody beer: BeerDTO): ResponseEntity<BeerDTO> {
+    fun handlePost(@RequestBody @Validated beer: BeerDTO): ResponseEntity<BeerDTO> {
         val savedBeer: BeerDTO = beerService.saveNewBeer(beer)
         val headers = HttpHeaders()
         headers.add("Location", "$BEER_PATH/${savedBeer.id}")
@@ -33,7 +34,10 @@ class BeerController(private val beerService: BeerService) {
     }
 
     @PutMapping(BEER_PATH_ID)
-    fun updateById(@PathVariable("beerId") beerId: UUID, @RequestBody beer: BeerDTO): ResponseEntity<BeerDTO> {
+    fun updateById(
+        @PathVariable("beerId") beerId: UUID,
+        @RequestBody @Validated beer: BeerDTO
+    ): ResponseEntity<BeerDTO> {
         beerService.updateById(beerId, beer)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
