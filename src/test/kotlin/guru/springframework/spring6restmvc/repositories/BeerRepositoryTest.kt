@@ -1,7 +1,9 @@
 package guru.springframework.spring6restmvc.repositories
 
 import guru.springframework.spring6restmvc.entities.Beer
+import jakarta.validation.ConstraintViolationException
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 
@@ -17,5 +19,19 @@ class BeerRepositoryTest {
         beerRepository.flush()
 
         assert(savedBeer.id.toString().isNotBlank())
+    }
+
+    @Test
+    fun testSaveBeerNameTooLong() {
+        assertThrows<ConstraintViolationException> {
+            beerRepository.save(
+                Beer(
+                    beerName = "My Beer 01234567890123456789012345678901234567890123456789",
+                    upc = "234234"
+                )
+            )
+
+            beerRepository.flush()
+        }
     }
 }
