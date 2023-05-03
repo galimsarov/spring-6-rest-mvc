@@ -75,18 +75,20 @@ class CustomerControllerIT {
     @Test
     @Transactional
     fun updateExistingCustomer() {
+        val testCustomerName = "UPDATED"
+
         val customer: Customer = customerRepository.findAll()[0]
-        val customerDTO = customer.toDto()
-        customerDTO.id = UUID.randomUUID()
-        customerDTO.version = 0
-        val customerName = "UPDATED"
-        customerDTO.customerName = customerName
+        val customerDTO = customer.toDto().apply {
+            id = UUID.randomUUID()
+            version = 0
+            customerName = testCustomerName
+        }
 
         val responseEntity: ResponseEntity<CustomerDTO> = customerController.updateById(customer.id, customerDTO)
         assert(responseEntity.statusCode == HttpStatusCode.valueOf(204))
 
         val updatedCustomer: Customer = customerRepository.findById(customer.id).get()
-        assert(updatedCustomer.customerName == customerName)
+        assert(updatedCustomer.customerName == testCustomerName)
     }
 
     @Test
