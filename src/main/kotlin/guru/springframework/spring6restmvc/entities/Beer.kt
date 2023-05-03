@@ -22,7 +22,7 @@ data class Beer(
 
     @Column(length = 50)
     @field:NotBlank
-    @field:Size(max = 50)
+    @field:Size(max = 50, message = "size must be between 0 and 50")
     var beerName: String = "",
     var beerStyle: BeerStyle = BeerStyle.NONE,
 

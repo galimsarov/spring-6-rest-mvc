@@ -1,17 +1,28 @@
 package guru.springframework.spring6restmvc.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import guru.springframework.spring6restmvc.entities.Beer
 import guru.springframework.spring6restmvc.mappers.toDto
 import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.repositories.BeerRepository
+import org.hamcrest.core.Is.`is`
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.context.WebApplicationContext
 import java.util.*
 
 @SpringBootTest
@@ -21,6 +32,19 @@ class BeerControllerIT {
 
     @Autowired
     private lateinit var beerRepository: BeerRepository
+
+    @Autowired
+    private lateinit var wac: WebApplicationContext
+
+    @Autowired
+    private lateinit var objectMapper: ObjectMapper
+
+    private lateinit var mockMvc: MockMvc
+
+    @BeforeEach
+    fun setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build()
+    }
 
     @Test
     fun testListBeers() {
@@ -136,5 +160,25 @@ class BeerControllerIT {
     @Test
     fun testPatchNotFound() {
         assertThrows<NotFoundException> { beerController.updateBeerPatchById(UUID.randomUUID(), BeerDTO()) }
+    }
+
+    @Test
+    fun testPatchBeerBadName() {
+        val beer: Beer = beerRepository.findAll()[0].apply {
+            beerName = "New Name 01234567890123456789012345678901234567890123456789"
+        }
+        val beerPathTestId = BEER_PATH + "/${beer.id}"
+
+        val result: MvcResult = mockMvc.perform(
+            patch(beerPathTestId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beer))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.length()", `is`(1)))
+            .andReturn()
+
+        println(result.response.contentAsString)
     }
 }
