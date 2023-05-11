@@ -20,6 +20,10 @@ data class Customer(
     var version: Int = 0,
 
     var customerName: String = "",
+
+    @Column(length = 255)
+    var email: String = "",
+
     var createdDate: LocalDateTime = LocalDateTime.now(),
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
 )
