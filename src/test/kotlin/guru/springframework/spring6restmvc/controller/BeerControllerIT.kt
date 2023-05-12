@@ -50,7 +50,7 @@ class BeerControllerIT {
     fun testListBeers() {
         val dtoList: List<BeerDTO> = beerController.listBeers()
 
-        assert(dtoList.size == 3)
+        assert(dtoList.size == 2413)
     }
 
     @Rollback
