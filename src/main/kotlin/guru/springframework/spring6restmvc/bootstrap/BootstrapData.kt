@@ -25,7 +25,6 @@ class BootstrapData(
     CommandLineRunner {
     @Transactional
     override fun run(vararg args: String?) {
-        loadBeerData()
         loadCsvData()
         loadCustomerData()
     }

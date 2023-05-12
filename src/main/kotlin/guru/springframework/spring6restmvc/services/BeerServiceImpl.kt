@@ -53,7 +53,7 @@ class BeerServiceImpl : BeerService {
         )
     }
 
-    override fun listBeers(): List<BeerDTO> {
+    override fun listBeers(beerName: String): List<BeerDTO> {
         return beerMap.values.toList()
     }
 

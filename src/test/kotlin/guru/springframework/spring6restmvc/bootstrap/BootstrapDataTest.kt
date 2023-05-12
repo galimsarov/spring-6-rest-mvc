@@ -33,7 +33,7 @@ class BootstrapDataTest {
     fun runTest() {
         bootstrapData.run()
 
-        assert(beerRepository.count() == 2413L)
+        assert(beerRepository.count() == 2410L)
         assert(customerRepository.count() == 2L)
     }
 }

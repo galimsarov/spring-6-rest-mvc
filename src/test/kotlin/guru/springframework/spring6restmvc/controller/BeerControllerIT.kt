@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -50,7 +51,7 @@ class BeerControllerIT {
     fun testListBeers() {
         val dtoList: List<BeerDTO> = beerController.listBeers()
 
-        assert(dtoList.size == 2413)
+        assert(dtoList.size == 2410)
     }
 
     @Rollback
@@ -180,5 +181,15 @@ class BeerControllerIT {
             .andReturn()
 
         println(result.response.contentAsString)
+    }
+
+    @Test
+    fun testListBeersByName() {
+        mockMvc.perform(
+            get(BEER_PATH)
+                .queryParam("beerName", "IPA")
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()", `is`(336)))
     }
 }
