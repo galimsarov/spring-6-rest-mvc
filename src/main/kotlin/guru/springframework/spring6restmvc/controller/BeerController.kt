@@ -18,9 +18,10 @@ class BeerController(private val beerService: BeerService) {
     @GetMapping(BEER_PATH)
     fun listBeers(
         @RequestParam(defaultValue = "", required = false) beerName: String = "",
-        @RequestParam(defaultValue = "", required = false) beerStyle: String = ""
+        @RequestParam(defaultValue = "", required = false) beerStyle: String = "",
+        @RequestParam(required = false) showInventory: Boolean? = null,
     ): List<BeerDTO> =
-        beerService.listBeers(beerName, beerStyle)
+        beerService.listBeers(beerName, beerStyle, showInventory)
 
     @GetMapping(BEER_PATH_ID)
     fun getBeerById(@PathVariable("beerId") beerId: UUID): BeerDTO = try {

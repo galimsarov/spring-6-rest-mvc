@@ -7,6 +7,7 @@ import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.model.BeerStyle
 import guru.springframework.spring6restmvc.repositories.BeerRepository
 import org.hamcrest.core.Is.`is`
+import org.hamcrest.core.IsNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -202,5 +203,42 @@ class BeerControllerIT {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.size()", `is`(547)))
+    }
+
+    @Test
+    fun testListBeersByStyleAndNameShowInventoryFalse() {
+        mockMvc.perform(
+            get(BEER_PATH)
+                .queryParam("beerName", "IPA")
+                .queryParam("beerStyle", BeerStyle.IPA.name)
+                .queryParam("showInventory", false.toString())
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()", `is`(310)))
+            .andExpect(jsonPath("$.[0].quantityOnHand", `is`(0)))
+    }
+
+    @Test
+    fun testListBeersByStyleAndNameShowInventoryTrue() {
+        mockMvc.perform(
+            get(BEER_PATH)
+                .queryParam("beerName", "IPA")
+                .queryParam("beerStyle", BeerStyle.IPA.name)
+                .queryParam("showInventory", true.toString())
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()", `is`(310)))
+            .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()))
+    }
+
+    @Test
+    fun testListBeersByStyleAndName() {
+        mockMvc.perform(
+            get(BEER_PATH)
+                .queryParam("beerName", "IPA")
+                .queryParam("beerStyle", BeerStyle.IPA.name)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()", `is`(310)))
     }
 }

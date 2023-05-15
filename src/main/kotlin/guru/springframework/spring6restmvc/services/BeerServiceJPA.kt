@@ -15,7 +15,7 @@ import java.util.*
 @Service
 @Suppress("unused")
 class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
-    override fun listBeers(beerName: String, beerStyle: String): List<BeerDTO> =
+    override fun listBeers(beerName: String, beerStyle: String, showInventory: Boolean?): List<BeerDTO> =
         beerRepository.findAll()
             .filter {
                 if (beerName.isNotBlank())
@@ -24,6 +24,8 @@ class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
                 if (beerStyle.isNotBlank())
                     if (!it.beerStyle.toString().contains(beerStyle, true))
                         return@filter false
+                if (showInventory != null && !showInventory)
+                    it.quantityOnHand = 0
                 true
             }.map { it.toDto() }
 
