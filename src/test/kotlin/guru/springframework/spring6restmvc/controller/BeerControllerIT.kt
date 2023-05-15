@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -51,9 +52,9 @@ class BeerControllerIT {
 
     @Test
     fun testListBeers() {
-        val dtoList: List<BeerDTO> = beerController.listBeers()
+        val dtoPage: Page<BeerDTO> = beerController.listBeers()
 
-        assert(dtoList.size == 2410)
+        assert(dtoPage.size == 25)
     }
 
     @Rollback
@@ -61,9 +62,9 @@ class BeerControllerIT {
     @Transactional
     fun testEmptyList() {
         beerRepository.deleteAll()
-        val dtoList: List<BeerDTO> = beerController.listBeers()
+        val dtoPage: Page<BeerDTO> = beerController.listBeers()
 
-        assert(dtoList.isEmpty())
+        assert(dtoPage.isEmpty)
     }
 
     @Test
@@ -190,9 +191,10 @@ class BeerControllerIT {
         mockMvc.perform(
             get(BEER_PATH)
                 .queryParam("beerName", "IPA")
+                .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()", `is`(336)))
+            .andExpect(jsonPath("$.content.size()", `is`(114)))
     }
 
     @Test
@@ -200,9 +202,22 @@ class BeerControllerIT {
         mockMvc.perform(
             get(BEER_PATH)
                 .queryParam("beerStyle", BeerStyle.IPA.name)
+                .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()", `is`(547)))
+            .andExpect(jsonPath("$.content.size()", `is`(169)))
+    }
+
+    @Test
+    fun testListBeersByStyleAndName() {
+        mockMvc.perform(
+            get(BEER_PATH)
+                .queryParam("beerName", "IPA")
+                .queryParam("beerStyle", BeerStyle.IPA.name)
+                .queryParam("pageSize", "800")
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content.size()", `is`(104)))
     }
 
     @Test
@@ -212,10 +227,11 @@ class BeerControllerIT {
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("showInventory", false.toString())
+                .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()", `is`(310)))
-            .andExpect(jsonPath("$.[0].quantityOnHand", `is`(0)))
+            .andExpect(jsonPath("$.content.size()", `is`(104)))
+            .andExpect(jsonPath("$.content.[0].quantityOnHand", `is`(0)))
     }
 
     @Test
@@ -225,20 +241,25 @@ class BeerControllerIT {
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("showInventory", true.toString())
+                .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()", `is`(310)))
-            .andExpect(jsonPath("$.[0].quantityOnHand").value(IsNull.notNullValue()))
+            .andExpect(jsonPath("$.content.size()", `is`(104)))
+            .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()))
     }
 
     @Test
-    fun testListBeersByStyleAndName() {
+    fun testListBeersByStyleAndNameShowInventoryTruePage2() {
         mockMvc.perform(
             get(BEER_PATH)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
+                .queryParam("showInventory", true.toString())
+                .queryParam("pageNumber", "2")
+                .queryParam("pageSize", "50")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()", `is`(310)))
+            .andExpect(jsonPath("$.content.size()", `is`(6)))
+            .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()))
     }
 }

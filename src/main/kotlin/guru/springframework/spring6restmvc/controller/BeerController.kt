@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.controller
 
 import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.services.BeerService
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,8 +21,9 @@ class BeerController(private val beerService: BeerService) {
         @RequestParam(defaultValue = "", required = false) beerName: String = "",
         @RequestParam(defaultValue = "", required = false) beerStyle: String = "",
         @RequestParam(required = false) showInventory: Boolean? = null,
-    ): List<BeerDTO> =
-        beerService.listBeers(beerName, beerStyle, showInventory)
+        @RequestParam(defaultValue = "1", required = false) pageNumber: Int = 1,
+        @RequestParam(defaultValue = "25", required = false) pageSize: Int = 25,
+    ): Page<BeerDTO> = beerService.listBeers(beerName, beerStyle, showInventory, pageNumber, pageSize)
 
     @GetMapping(BEER_PATH_ID)
     fun getBeerById(@PathVariable("beerId") beerId: UUID): BeerDTO = try {

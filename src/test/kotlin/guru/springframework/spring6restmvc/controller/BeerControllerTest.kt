@@ -37,7 +37,7 @@ class BeerControllerTest {
     @BeforeEach
     fun setUp() {
         beerServiceImpl = BeerServiceImpl()
-        beer = beerServiceImpl.listBeers()[0]
+        beer = beerServiceImpl.listBeers().first()
         beerPathTestId = BEER_PATH + "/${beer.id}"
     }
 
@@ -75,12 +75,12 @@ class BeerControllerTest {
             .perform(get(BEER_PATH).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.length()", `is`(listBeers.size)))
+            .andExpect(jsonPath("$.content.length()", `is`(listBeers.size)))
     }
 
     @Test
     fun testCreateNewBeer() {
-        `when`(beerService.saveNewBeer(beer)).thenReturn(beerServiceImpl.listBeers()[1])
+        `when`(beerService.saveNewBeer(beer)).thenReturn(beerServiceImpl.listBeers().elementAt(1))
 
         mockMvc
             .perform(
@@ -97,7 +97,7 @@ class BeerControllerTest {
     fun testCreateBeerEmptyBeerName() {
         val emptyBeer = BeerDTO()
 
-        `when`(beerService.saveNewBeer(emptyBeer)).thenReturn(beerServiceImpl.listBeers()[1])
+        `when`(beerService.saveNewBeer(emptyBeer)).thenReturn(beerServiceImpl.listBeers().elementAt(1))
 
         val mvcResult: MvcResult = mockMvc.perform(
             post(BEER_PATH)
@@ -129,7 +129,7 @@ class BeerControllerTest {
     fun testUpdateBeerEmptyBeerName() {
         val emptyBeer = BeerDTO()
 
-        `when`(beerService.updateById(emptyBeer.id, emptyBeer)).thenReturn(beerServiceImpl.listBeers()[1])
+        `when`(beerService.updateById(emptyBeer.id, emptyBeer)).thenReturn(beerServiceImpl.listBeers().elementAt(1))
 
         val mvcResult: MvcResult = mockMvc.perform(
             put(beerPathTestId)

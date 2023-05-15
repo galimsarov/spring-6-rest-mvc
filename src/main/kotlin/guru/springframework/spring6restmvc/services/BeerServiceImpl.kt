@@ -2,6 +2,8 @@ package guru.springframework.spring6restmvc.services
 
 import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.model.BeerStyle
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -53,8 +55,14 @@ class BeerServiceImpl : BeerService {
         )
     }
 
-    override fun listBeers(beerName: String, beerStyle: String, showInventory: Boolean?): List<BeerDTO> {
-        return beerMap.values.toList()
+    override fun listBeers(
+        beerName: String,
+        beerStyle: String,
+        showInventory: Boolean?,
+        pageNumber: Int,
+        pageSize: Int
+    ): Page<BeerDTO> {
+        return PageImpl(beerMap.values.toList())
     }
 
     override fun getBeerById(id: UUID): BeerDTO {

@@ -7,6 +7,10 @@ import guru.springframework.spring6restmvc.model.BeerDTO
 import guru.springframework.spring6restmvc.model.BeerStyle
 import guru.springframework.spring6restmvc.repositories.BeerRepository
 import org.springframework.context.annotation.Primary
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.*
@@ -15,8 +19,16 @@ import java.util.*
 @Service
 @Suppress("unused")
 class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
-    override fun listBeers(beerName: String, beerStyle: String, showInventory: Boolean?): List<BeerDTO> =
-        beerRepository.findAll()
+    override fun listBeers(
+        beerName: String,
+        beerStyle: String,
+        showInventory: Boolean?,
+        pageNumber: Int,
+        pageSize: Int
+    ): Page<BeerDTO> {
+        val pageRequest = buildPageRequest(pageNumber, pageSize)
+
+        val resultList = beerRepository.findAll(pageRequest)
             .filter {
                 if (beerName.isNotBlank())
                     if (!it.beerName.contains(beerName, true))
@@ -27,7 +39,10 @@ class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
                 if (showInventory != null && !showInventory)
                     it.quantityOnHand = 0
                 true
-            }.map { it.toDto() }
+            }.map { it.toDto() }.toList()
+
+        return PageImpl(resultList)
+    }
 
     override fun getBeerById(id: UUID): BeerDTO = beerRepository.findById(id).get().toDto()
 
@@ -74,5 +89,12 @@ class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
         }
         if (result.beerName.isNotBlank()) return result
         else throw NotFoundException()
+    }
+
+    fun buildPageRequest(pageNumber: Int, pageSize: Int): PageRequest {
+        val queryPageNumber: Int = if (pageNumber > 0) pageNumber - 1 else 0
+        val queryPageSize: Int = if (pageSize > 1000) 1000 else pageSize
+        val sort: Sort = Sort.by(Sort.Order.asc("beerName"))
+        return PageRequest.of(queryPageNumber, queryPageSize, sort)
     }
 }
