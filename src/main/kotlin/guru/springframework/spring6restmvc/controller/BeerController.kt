@@ -16,8 +16,11 @@ const val BEER_PATH_ID = "$BEER_PATH/{beerId}"
 @Suppress("unused")
 class BeerController(private val beerService: BeerService) {
     @GetMapping(BEER_PATH)
-    fun listBeers(@RequestParam(defaultValue = "", required = false) beerName: String = ""): List<BeerDTO> =
-        beerService.listBeers(beerName)
+    fun listBeers(
+        @RequestParam(defaultValue = "", required = false) beerName: String = "",
+        @RequestParam(defaultValue = "", required = false) beerStyle: String = ""
+    ): List<BeerDTO> =
+        beerService.listBeers(beerName, beerStyle)
 
     @GetMapping(BEER_PATH_ID)
     fun getBeerById(@PathVariable("beerId") beerId: UUID): BeerDTO = try {

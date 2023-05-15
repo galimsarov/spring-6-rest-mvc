@@ -4,7 +4,7 @@ import guru.springframework.spring6restmvc.model.BeerDTO
 import java.util.*
 
 interface BeerService {
-    fun listBeers(beerName: String = ""): List<BeerDTO>
+    fun listBeers(beerName: String = "", beerStyle: String = ""): List<BeerDTO>
 
     fun getBeerById(id: UUID): BeerDTO
 

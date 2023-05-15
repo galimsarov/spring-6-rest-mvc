@@ -15,12 +15,17 @@ import java.util.*
 @Service
 @Suppress("unused")
 class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
-    override fun listBeers(beerName: String): List<BeerDTO> =
-        if (beerName.isNotBlank()) {
-            beerRepository.findAllByBeerNameIsLikeIgnoreCase("%$beerName%").map { it.toDto() }
-        } else {
-            beerRepository.findAll().map { it.toDto() }
-        }
+    override fun listBeers(beerName: String, beerStyle: String): List<BeerDTO> =
+        beerRepository.findAll()
+            .filter {
+                if (beerName.isNotBlank())
+                    if (!it.beerName.contains(beerName, true))
+                        return@filter false
+                if (beerStyle.isNotBlank())
+                    if (!it.beerStyle.toString().contains(beerStyle, true))
+                        return@filter false
+                true
+            }.map { it.toDto() }
 
     override fun getBeerById(id: UUID): BeerDTO = beerRepository.findById(id).get().toDto()
 

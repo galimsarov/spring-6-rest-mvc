@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import guru.springframework.spring6restmvc.entities.Beer
 import guru.springframework.spring6restmvc.mappers.toDto
 import guru.springframework.spring6restmvc.model.BeerDTO
+import guru.springframework.spring6restmvc.model.BeerStyle
 import guru.springframework.spring6restmvc.repositories.BeerRepository
 import org.hamcrest.core.Is.`is`
 import org.junit.jupiter.api.BeforeEach
@@ -191,5 +192,15 @@ class BeerControllerIT {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.size()", `is`(336)))
+    }
+
+    @Test
+    fun testListBeersByStyle() {
+        mockMvc.perform(
+            get(BEER_PATH)
+                .queryParam("beerStyle", BeerStyle.IPA.name)
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()", `is`(547)))
     }
 }

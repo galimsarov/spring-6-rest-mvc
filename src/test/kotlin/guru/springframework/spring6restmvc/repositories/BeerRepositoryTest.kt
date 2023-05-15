@@ -38,11 +38,4 @@ class BeerRepositoryTest {
             beerRepository.flush()
         }
     }
-
-    @Test
-    fun testBeerListByName() {
-        val list: List<Beer> = beerRepository.findAllByBeerNameIsLikeIgnoreCase("%IPA%")
-
-        assert(list.size == 336)
-    }
 }
