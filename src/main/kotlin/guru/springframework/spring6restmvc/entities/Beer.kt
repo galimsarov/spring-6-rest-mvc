@@ -39,4 +39,22 @@ data class Beer(
 ) {
     @OneToMany(mappedBy = "beer")
     var beerOrderLines: MutableSet<BeerOrderLine> = mutableSetOf()
+
+    @ManyToMany
+    @JoinTable(
+        name = "beer_category",
+        joinColumns = [JoinColumn(name = "beer_id")],
+        inverseJoinColumns = [JoinColumn(name = "category_id")]
+    )
+    var categories: MutableSet<Category> = mutableSetOf()
+
+    fun addCategory(category: Category) {
+        categories.add(category)
+        category.beers.add(this)
+    }
+
+    fun removeCategory(category: Category) {
+        categories.remove(category)
+        category.beers.remove(this)
+    }
 }
