@@ -194,7 +194,7 @@ class BeerControllerIT {
                 .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.size()", `is`(114)))
+            .andExpect(jsonPath("$.content.size()", `is`(336)))
     }
 
     @Test
@@ -205,7 +205,7 @@ class BeerControllerIT {
                 .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.size()", `is`(169)))
+            .andExpect(jsonPath("$.content.size()", `is`(547)))
     }
 
     @Test
@@ -217,7 +217,7 @@ class BeerControllerIT {
                 .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.size()", `is`(104)))
+            .andExpect(jsonPath("$.content.size()", `is`(268)))
     }
 
     @Test
@@ -230,7 +230,7 @@ class BeerControllerIT {
                 .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.size()", `is`(104)))
+            .andExpect(jsonPath("$.content.size()", `is`(268)))
             .andExpect(jsonPath("$.content.[0].quantityOnHand", `is`(0)))
     }
 
@@ -244,7 +244,7 @@ class BeerControllerIT {
                 .queryParam("pageSize", "800")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.size()", `is`(104)))
+            .andExpect(jsonPath("$.content.size()", `is`(268)))
             .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()))
     }
 
@@ -259,7 +259,7 @@ class BeerControllerIT {
                 .queryParam("pageSize", "50")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.size()", `is`(6)))
+            .andExpect(jsonPath("$.content.size()", `is`(50)))
             .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()))
     }
 }

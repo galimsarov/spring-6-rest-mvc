@@ -28,20 +28,29 @@ class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
     ): Page<BeerDTO> {
         val pageRequest = buildPageRequest(pageNumber, pageSize)
 
-        val resultList = beerRepository.findAll(pageRequest)
-            .filter {
-                if (beerName.isNotBlank())
-                    if (!it.beerName.contains(beerName, true))
-                        return@filter false
-                if (beerStyle.isNotBlank())
-                    if (!it.beerStyle.toString().contains(beerStyle, true))
-                        return@filter false
-                if (showInventory != null && !showInventory)
-                    it.quantityOnHand = 0
-                true
-            }.map { it.toDto() }.toList()
+        val resultList = when {
+            beerName.isNotBlank() && beerStyle.isBlank() ->
+                beerRepository.findAllByBeerNameIsLikeIgnoreCase("%$beerName%", pageRequest)
+
+            beerName.isBlank() && beerStyle.isNotBlank() ->
+                beerRepository.findAllByBeerStyle(BeerStyle.valueOf(beerStyle.uppercase()), pageRequest)
+
+            beerName.isNotBlank() && beerStyle.isNotBlank() ->
+                beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle(
+                    "%$beerName", BeerStyle.valueOf(beerStyle.uppercase()), pageRequest
+                )
+
+            else -> beerRepository.findAll(pageRequest)
+        }.map { it.toDto(showInventory) }.toList()
 
         return PageImpl(resultList)
+    }
+
+    private fun buildPageRequest(pageNumber: Int, pageSize: Int): PageRequest {
+        val queryPageNumber: Int = if (pageNumber > 0) pageNumber - 1 else 0
+        val queryPageSize: Int = if (pageSize > 1000) 1000 else pageSize
+        val sort: Sort = Sort.by(Sort.Order.asc("beerName"))
+        return PageRequest.of(queryPageNumber, queryPageSize, sort)
     }
 
     override fun getBeerById(id: UUID): BeerDTO = beerRepository.findById(id).get().toDto()
@@ -91,10 +100,5 @@ class BeerServiceJPA(private val beerRepository: BeerRepository) : BeerService {
         else throw NotFoundException()
     }
 
-    fun buildPageRequest(pageNumber: Int, pageSize: Int): PageRequest {
-        val queryPageNumber: Int = if (pageNumber > 0) pageNumber - 1 else 0
-        val queryPageSize: Int = if (pageSize > 1000) 1000 else pageSize
-        val sort: Sort = Sort.by(Sort.Order.asc("beerName"))
-        return PageRequest.of(queryPageNumber, queryPageSize, sort)
-    }
+
 }
