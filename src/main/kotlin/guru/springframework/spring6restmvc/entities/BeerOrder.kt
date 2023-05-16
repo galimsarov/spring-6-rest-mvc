@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Entity
-data class Customer(
+data class BeerOrder(
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -19,14 +19,16 @@ data class Customer(
     @Version
     var version: Int = 0,
 
-    var customerName: String = "",
-
-    @Column(length = 255)
-    var email: String = "",
-
     var createdDate: LocalDateTime = LocalDateTime.now(),
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
 
-    @OneToMany(mappedBy = "customer")
-    var beerOrders: MutableSet<BeerOrder> = mutableSetOf()
-)
+    var customerRef: String = "",
+
+    @ManyToOne
+    var customer: Customer = Customer(),
+
+    @OneToMany(mappedBy = "beerOrder")
+    var beerOrderLines: MutableSet<BeerOrderLine> = mutableSetOf()
+) {
+    fun isNew(): Boolean = id.toString().isBlank()
+}
