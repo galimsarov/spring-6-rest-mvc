@@ -170,6 +170,7 @@ class BeerControllerIT {
     fun testPatchBeerBadName() {
         val beer: Beer = beerRepository.findAll()[0].apply {
             beerName = "New Name 01234567890123456789012345678901234567890123456789"
+            beerOrderLines = mutableSetOf()
         }
         val beerPathTestId = BEER_PATH + "/${beer.id}"
 

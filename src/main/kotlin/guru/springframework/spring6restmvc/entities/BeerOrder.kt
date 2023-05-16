@@ -23,12 +23,17 @@ data class BeerOrder(
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
 
     var customerRef: String = "",
-
+) {
     @ManyToOne
-    var customer: Customer = Customer(),
+    var customer: Customer = Customer()
+        set(value) {
+            field = value
+            customer.beerOrders.add(this)
+        }
+
 
     @OneToMany(mappedBy = "beerOrder")
     var beerOrderLines: MutableSet<BeerOrderLine> = mutableSetOf()
-) {
+
     fun isNew(): Boolean = id.toString().isBlank()
 }

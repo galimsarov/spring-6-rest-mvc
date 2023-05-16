@@ -36,7 +36,7 @@ data class Beer(
     var price: BigDecimal = BigDecimal(0),
     var createdDate: LocalDateTime = LocalDateTime.now(),
     var updateDate: LocalDateTime = LocalDateTime.now(),
-
+) {
     @OneToMany(mappedBy = "beer")
     var beerOrderLines: MutableSet<BeerOrderLine> = mutableSetOf()
-)
+}

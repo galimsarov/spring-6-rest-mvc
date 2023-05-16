@@ -26,7 +26,7 @@ data class Customer(
 
     var createdDate: LocalDateTime = LocalDateTime.now(),
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
-
+) {
     @OneToMany(mappedBy = "customer")
     var beerOrders: MutableSet<BeerOrder> = mutableSetOf()
-)
+}
