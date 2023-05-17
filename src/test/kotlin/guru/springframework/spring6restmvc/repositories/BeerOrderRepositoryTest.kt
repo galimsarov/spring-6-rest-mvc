@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.repositories
 
 import guru.springframework.spring6restmvc.entities.Beer
 import guru.springframework.spring6restmvc.entities.BeerOrder
+import guru.springframework.spring6restmvc.entities.BeerOrderShipment
 import guru.springframework.spring6restmvc.entities.Customer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,6 +21,9 @@ class BeerOrderRepositoryTest {
     @Autowired
     private lateinit var beerRepository: BeerRepository
 
+    @Autowired
+    private lateinit var beerOrderShipmentRepository: BeerOrderShipmentRepository
+
     private lateinit var testCustomer: Customer
     private lateinit var testBeer: Beer
 
@@ -32,10 +36,14 @@ class BeerOrderRepositoryTest {
     @Test
     @Transactional
     fun testBeerOrders() {
-        val beerOrder = BeerOrder(customerRef = "Test order").apply { customer = testCustomer }
+        val savedBeerOrderShipment = beerOrderShipmentRepository.save(BeerOrderShipment(trackingNumber = "1235r"))
+
+        val beerOrder = BeerOrder(customerRef = "Test order").apply {
+            customer = testCustomer
+            beerOrderShipment = savedBeerOrderShipment
+        }
         val savedBeerOrder = beerOrderRepository.save(beerOrder)
 
         println(savedBeerOrder.customerRef)
-
     }
 }

@@ -23,9 +23,6 @@ data class BeerOrder(
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
 
     var customerRef: String = "",
-
-    @OneToOne
-    var beerOrderShipment: BeerOrderShipment? = null
 ) {
     @ManyToOne
     var customer: Customer = Customer()
@@ -37,6 +34,13 @@ data class BeerOrder(
 
     @OneToMany(mappedBy = "beerOrder")
     var beerOrderLines: MutableSet<BeerOrderLine> = mutableSetOf()
+
+    @OneToOne(cascade = [CascadeType.PERSIST])
+    var beerOrderShipment: BeerOrderShipment? = null
+        set(value) {
+            field = value
+            beerOrderShipment?.beerOrder = this
+        }
 
     fun isNew(): Boolean = id.toString().isBlank()
 }
