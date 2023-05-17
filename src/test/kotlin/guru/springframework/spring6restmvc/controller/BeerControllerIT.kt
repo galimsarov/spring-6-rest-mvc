@@ -9,6 +9,7 @@ import guru.springframework.spring6restmvc.repositories.BeerRepository
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,8 +21,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -263,5 +263,37 @@ class BeerControllerIT {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.size()", `is`(50)))
             .andExpect(jsonPath("$.content.[0].quantityOnHand").value(IsNull.notNullValue()))
+    }
+
+    @Disabled
+    @Test
+    fun testUpdateBeerBadVersion() {
+        val beer = beerRepository.findAll()[0]
+        val beerDTO = beer.toDto()
+        beerDTO.beerName = "Updated Name"
+
+        val result: MvcResult = mockMvc.perform(
+            put(BEER_PATH_ID, beer.id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerDTO))
+        )
+            .andExpect(status().isNoContent)
+            .andReturn()
+
+        println(result.response.contentAsString)
+
+        beerDTO.beerName = "Updated Name 2"
+
+        val result2: MvcResult = mockMvc.perform(
+            put(BEER_PATH_ID, beer.id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(beerDTO))
+        )
+            .andExpect(status().isNoContent)
+            .andReturn()
+
+        println(result2.response.status)
     }
 }
