@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Entity
-data class BeerOrder(
+data class BeerOrderShipment(
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -22,21 +22,8 @@ data class BeerOrder(
     var createdDate: LocalDateTime = LocalDateTime.now(),
     var lastModifiedDate: LocalDateTime = LocalDateTime.now(),
 
-    var customerRef: String = "",
+    var trackingNumber: String = "",
 
     @OneToOne
-    var beerOrderShipment: BeerOrderShipment? = null
-) {
-    @ManyToOne
-    var customer: Customer = Customer()
-        set(value) {
-            field = value
-            customer.beerOrders.add(this)
-        }
-
-
-    @OneToMany(mappedBy = "beerOrder")
-    var beerOrderLines: MutableSet<BeerOrderLine> = mutableSetOf()
-
-    fun isNew(): Boolean = id.toString().isBlank()
-}
+    var beerOrder: BeerOrder? = null
+)
