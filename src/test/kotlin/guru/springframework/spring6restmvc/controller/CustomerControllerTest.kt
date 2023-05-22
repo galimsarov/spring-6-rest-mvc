@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import guru.springframework.spring6restmvc.config.SpringSecurityConfig
 import guru.springframework.spring6restmvc.model.CustomerDTO
 import guru.springframework.spring6restmvc.services.CustomerService
 import guru.springframework.spring6restmvc.services.CustomerServiceImpl
@@ -11,14 +12,18 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.util.*
 
+@Import(SpringSecurityConfig::class)
 @WebMvcTest(CustomerController::class)
 class CustomerControllerTest {
     @Autowired
@@ -29,6 +34,12 @@ class CustomerControllerTest {
 
     @MockBean
     private lateinit var customerService: CustomerService
+
+    @Value("\${spring.security.user.name}")
+    private lateinit var userName: String
+
+    @Value("\${spring.security.user.password}")
+    private lateinit var password: String
 
     private lateinit var customerServiceImpl: CustomerServiceImpl
     private lateinit var customer: CustomerDTO
@@ -46,7 +57,7 @@ class CustomerControllerTest {
         `when`(customerService.getCustomerById(customer.id)).thenReturn(customer)
 
         mockMvc
-            .perform(get(customerPathTestId).accept(MediaType.APPLICATION_JSON))
+            .perform(get(customerPathTestId).with(httpBasic(userName, password)).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", Is.`is`(customer.id.toString())))
@@ -61,7 +72,7 @@ class CustomerControllerTest {
         `when`(customerService.getCustomerById(badId)).thenThrow(NotFoundException::class.java)
 
         mockMvc
-            .perform(get(pathWithBadId))
+            .perform(get(pathWithBadId).with(httpBasic(userName, password)))
             .andExpect(status().isNotFound)
     }
 
@@ -72,7 +83,7 @@ class CustomerControllerTest {
         `when`(customerService.listCustomers()).thenReturn(listCustomers)
 
         mockMvc
-            .perform(get(CUSTOMER_PATH).accept(MediaType.APPLICATION_JSON))
+            .perform(get(CUSTOMER_PATH).with(httpBasic(userName, password)).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.length()", Is.`is`(listCustomers.size)))
@@ -84,7 +95,7 @@ class CustomerControllerTest {
 
         mockMvc
             .perform(
-                post(CUSTOMER_PATH)
+                post(CUSTOMER_PATH).with(httpBasic(userName, password))
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(customer))
@@ -97,7 +108,7 @@ class CustomerControllerTest {
     fun testUpdateCustomer() {
         mockMvc
             .perform(
-                put(customerPathTestId)
+                put(customerPathTestId).with(httpBasic(userName, password))
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(customer))
@@ -112,7 +123,7 @@ class CustomerControllerTest {
         `when`(customerService.deleteById(customer.id)).thenReturn(true)
 
         mockMvc
-            .perform(delete(customerPathTestId).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(customerPathTestId).with(httpBasic(userName, password)).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent)
 
         verify(customerService).deleteById(customer.id)
@@ -122,7 +133,7 @@ class CustomerControllerTest {
     fun testPatchCustomer() {
         mockMvc
             .perform(
-                patch(customerPathTestId)
+                patch(customerPathTestId).with(httpBasic(userName, password))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(customer))
