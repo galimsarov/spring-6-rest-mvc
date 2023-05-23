@@ -13,13 +13,12 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.web.servlet.MockMvc
@@ -31,6 +30,7 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.time.Instant
 import java.util.*
 
 @SpringBootTest
@@ -47,13 +47,16 @@ class BeerControllerIT {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    @Value("\${spring.security.user.name}")
-    private lateinit var userName: String
-
-    @Value("\${spring.security.user.password}")
-    private lateinit var password: String
-
     private lateinit var mockMvc: MockMvc
+
+    private val jwtRequestPostProcessor: SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor =
+        SecurityMockMvcRequestPostProcessors.jwt()
+            .jwt { jwt ->
+                jwt.claims { claims ->
+                    claims["scope"] = "message-read"
+                    claims["scope"] = "message-write"
+                }.subject("messaging-client").notBefore(Instant.now().minusSeconds(5))
+            }
 
     @BeforeEach
     fun setUp() {
@@ -188,7 +191,7 @@ class BeerControllerIT {
         val beerPathTestId = BEER_PATH + "/${beer.id}"
 
         val result: MvcResult = mockMvc.perform(
-            patch(beerPathTestId).with(httpBasic(userName, password))
+            patch(beerPathTestId).with(jwtRequestPostProcessor)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beer))
@@ -203,7 +206,7 @@ class BeerControllerIT {
     @Test
     fun testListBeersByName() {
         mockMvc.perform(
-            get(BEER_PATH).with(httpBasic(userName, password))
+            get(BEER_PATH).with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("pageSize", "800")
         )
@@ -214,7 +217,7 @@ class BeerControllerIT {
     @Test
     fun testListBeersByStyle() {
         mockMvc.perform(
-            get(BEER_PATH).with(httpBasic(userName, password))
+            get(BEER_PATH).with(jwtRequestPostProcessor)
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("pageSize", "800")
         )
@@ -225,7 +228,7 @@ class BeerControllerIT {
     @Test
     fun testListBeersByStyleAndName() {
         mockMvc.perform(
-            get(BEER_PATH).with(httpBasic(userName, password))
+            get(BEER_PATH).with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("pageSize", "800")
@@ -237,7 +240,7 @@ class BeerControllerIT {
     @Test
     fun testListBeersByStyleAndNameShowInventoryFalse() {
         mockMvc.perform(
-            get(BEER_PATH).with(httpBasic(userName, password))
+            get(BEER_PATH).with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("showInventory", false.toString())
@@ -251,7 +254,7 @@ class BeerControllerIT {
     @Test
     fun testListBeersByStyleAndNameShowInventoryTrue() {
         mockMvc.perform(
-            get(BEER_PATH).with(httpBasic(userName, password))
+            get(BEER_PATH).with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("showInventory", true.toString())
@@ -265,7 +268,7 @@ class BeerControllerIT {
     @Test
     fun testListBeersByStyleAndNameShowInventoryTruePage2() {
         mockMvc.perform(
-            get(BEER_PATH).with(httpBasic(userName, password))
+            get(BEER_PATH).with(jwtRequestPostProcessor)
                 .queryParam("beerName", "IPA")
                 .queryParam("beerStyle", BeerStyle.IPA.name)
                 .queryParam("showInventory", true.toString())
