@@ -10,8 +10,10 @@ class SpringSecurityConfig {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.authorizeHttpRequests()
-            .anyRequest().authenticated()
-            .and().oauth2ResourceServer().jwt()
+                .requestMatchers("/v3/api-docs**", "/swagger-ui/**", "/swagger-ui.html")
+                .permitAll()
+                .anyRequest().authenticated()
+                .and().oauth2ResourceServer().jwt()
         return http.build()
     }
 }
